@@ -9,6 +9,5 @@ public class Transaction
     public DateOnly Date { get; set; }
     public decimal TotalAmount { get; set; }
     public Service Service { get; set; }
-    
     public User User { get; set; }
 }
