@@ -1,20 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Context;
+using MoneyFlow.Managers;
 
 namespace MoneyFlow.Controllers;
 
 public class ServiceController : Controller
 {
-    private readonly AppDbContext _context;
+    private readonly ServiceManager _manager;
 
-    public ServiceController(AppDbContext context)
+    public ServiceController(ServiceManager manager)
     {
-        _context = context;
+        _manager = manager;
     }
     
+    //Todo: Cambiar user ID
     public IActionResult Index()
     {
-        var serviceList = _context.Service.ToList();
+        var serviceList =  _manager.GetAll(1);
         return View(serviceList);
     }
 }
