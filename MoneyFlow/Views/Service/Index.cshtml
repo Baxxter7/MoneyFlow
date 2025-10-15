@@ -1,44 +1,35 @@
-@model List<MoneyFlow.Entities.Service>
+@model List<ServiceVM>
 
+@{
+    ViewData["Title"] = "Services";
+}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>Lista de Servicios</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 60%;
-            margin: 20px auto;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-</head>
-<body>
-<table class="table">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Type</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model)
-    {
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-semibold">Services</h2>
+        <a  class="btn btn-success px-3">New Service</a>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-light">
         <tr>
-            <td>@item.Name</td>
-            <td>@item.Type</td>
+            <th>Name</th>
+            <th>Type</th>
+            <th style="width: 180px;"></th>
         </tr>
-    }
-    </tbody>
-</table>
-</body>
-</html>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Type</td>
+                <td>
+                    <a  class="btn btn-primary btn-sm me-1">Edit</a>
+                    <a  class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
