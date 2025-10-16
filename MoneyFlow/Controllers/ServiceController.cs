@@ -89,4 +89,11 @@ public class ServiceController : Controller
         return View();
     }
     
+    public IActionResult Delete(int id )
+    {
+        //todo: Cambiar a dinamico
+        var service = _manager.Delete(id);
+        
+        return RedirectToAction("Index");
+    }
 }

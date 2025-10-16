@@ -76,5 +76,13 @@ public class ServiceManager
         return rowsAftected;
 
     }
-    
+
+    public int Delete(int id)
+    {
+        var entity = _context.Service.Find(id);
+        _context.Service.Remove(entity);
+        
+        var rowsAftected = _context.SaveChanges();
+        return rowsAftected;
+    }
 }
