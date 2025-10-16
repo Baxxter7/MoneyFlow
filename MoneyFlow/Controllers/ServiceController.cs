@@ -29,13 +29,29 @@ public class ServiceController : Controller
     [HttpPost]
     public IActionResult New(ServiceVM service)
     {
+
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
+            // Visualízalos en consola o en una vista temporal
+            Console.WriteLine(string.Join(", ", errors));
+
+            
+            return View(service);
+        }
+
         //TODO: Cambiar el user id
+      
         service.UserId = 1;
-        
         var response = _manager.New(service);
         
         if(response == 1)
             return RedirectToAction(nameof(Index));
+        
         ViewBag.message = "Error al crear servicio";
         return View();
     }
