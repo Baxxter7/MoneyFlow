@@ -1,0 +1,40 @@
+@model ServiceVM
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="row mt-4">
+    <div class="col-sm-6 offset-sm-3">
+        <h2>Edit Service</h2>
+        <form asp-controller="Service" asp-action="Edit" method="post">
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" asp-for="Name" />
+                <input type="hidden" asp-for="ServiceId">
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Type</label>
+                <select class="form-select" asp-for="Type">
+                    <option value="0" disabled selected>-- select --</option>
+                    <option value="income">income</option>
+                    <option value="expense">expense</option>
+                </select>
+                <span asp-validation-for="Type" class="text-danger"></span>
+            </div>
+            
+            @if (ViewBag.message != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @ViewBag.message
+                </div>
+            }
+            
+            <div class="d-grid gap-2 d-md-block">
+                <button class="btn btn-success" type="submit">Save</button>
+                <a asp-controller="Service" asp-action="Index" class="btn btn-warning">Back</a>
+            </div>
+        </form>
+    </div>
+</div>

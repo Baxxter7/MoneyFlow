@@ -55,4 +55,38 @@ public class ServiceController : Controller
         ViewBag.message = "Error al crear servicio";
         return View();
     }
+    
+    [HttpGet]
+    public IActionResult Edit(int id = 1)
+    {
+        //todo: Cambiar a dinamico
+        var service = _manager.GetById(id);
+        
+        return View(service);
+    }
+    
+    [HttpPost]
+    public IActionResult Edit(ServiceVM viewModel )
+    {
+        //todo: Cambiar a dinamico
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
+            // Visualízalos en consola o en una vista temporal
+            Console.WriteLine(string.Join(", ", errors));
+            return View();
+        }
+
+        var response = _manager.Edit(viewModel);
+        if(response == 1)
+            return RedirectToAction(nameof(Index));
+        
+        ViewBag.message = "Error al crear servicio";
+        return View();
+    }
+    
 }

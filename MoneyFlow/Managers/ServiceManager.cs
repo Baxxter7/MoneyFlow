@@ -44,4 +44,37 @@ public class ServiceManager
         var rowsAftected = _context.SaveChanges();
         return rowsAftected;
     }
+
+    public ServiceVM?  GetById(int id)
+    {
+        var model = _context.Service
+            .AsNoTracking()
+            .Where(s => s.ServiceId == id)
+            .Select(item => new ServiceVM
+            {
+                UserId = item.UserId,
+                ServiceId = item.ServiceId,
+                Name = item.Name,
+                Type = item.Type
+            })
+            .FirstOrDefault();
+
+        return model  ;
+    }
+
+    public int Edit(ServiceVM viewModel)
+    {
+        var entity = _context.Service.Find(viewModel.ServiceId);
+        if (entity == null)
+            return 0;
+        
+        entity.Name = viewModel.Name;
+        entity.Type = viewModel.Type;
+        
+        _context.Service.Update(entity);
+        var rowsAftected = _context.SaveChanges();
+        return rowsAftected;
+
+    }
+    
 }
