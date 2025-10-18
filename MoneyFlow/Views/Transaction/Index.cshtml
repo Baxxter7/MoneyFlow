@@ -1,0 +1,174 @@
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="row mt-4">
+    <div class="col-sm-6 offset-sm-3">
+        <h2>New Transaction</h2>
+        <form asp-controller="Service" asp-action="New" method="post">
+            
+            <div class="mb-3">
+                <label class="form-label">Type</label>
+                <select class="form-select"  id="cboTypeService" onchange="ShowServices()">
+                    <option value="0" disabled selected>-- select --</option>
+                    <option value="income">income</option>
+                    <option value="expense">expense</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Service</label>
+                <select class="form-select"  id="cboService">
+                    <option></option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Comment</label>
+                <input type="text" class="form-control" id="txtComment" autocomplete="off"/>
+            </div>
+             
+            <div class="mb-3">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-control" id="txtDate" autocomplete="off"/>
+            </div>  
+            
+            <div class="mb-3">
+                <label class="form-label">Total Amount</label>
+                <input type="number" class="form-control" id="txtTotalAmount" autocomplete="off"/>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-block">
+                <button class="btn btn-success" type="button" onclick="Save()">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Styles{
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-container .select2-selection--single {
+            height: 38px !important;
+            border: 1px solid #ced4da !important;
+            border-radius: 0.375rem !important;
+            padding: 0.375rem 2.25rem 0.375rem 0.75rem !important;
+            background-color: #fff !important;
+            transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+        
+        .select2-selection__rendered {
+            line-height: 26px !important;
+            color: #212529 !important;
+            font-size: 1rem !important;
+        }
+        
+        .select2-selection__arrow {
+            height: 38px !important;
+            right: 8px !important;
+        }
+        
+        .select2-container--default .select2-selection--single:focus,
+        .select2-container--default.select2-container--focus .select2-selection--single {
+            border-color: #86b7fe !important;
+            outline: 0;
+            box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25) !important;
+        }
+    </style>
+}
+
+@section Scripts{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#cboService').select2({ 
+                placeholder: "-- select --",
+                width: '100%'
+            });
+
+            const today = new Date().toISOString().split("T")[0];
+            $("#txtDate").val(today);
+
+        });
+
+        async function ShowServices() {
+            const typeService = $("#cboTypeService").val();
+            const endpoint = `/Transaction/ServicesByType?typeService=${typeService}`
+            
+            const response = await fetch(endpoint, {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json;charset=utf-8' }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+
+                const serviceSelect = $("#cboService");
+                serviceSelect.empty();
+                serviceSelect.append(new Option());
+
+                data.forEach((item) => {
+                    serviceSelect.append(new Option(item.name, item.serviceId));
+                });
+                
+                serviceSelect.trigger("change.select2");
+            }else {
+                console.error("Error al obtener servicios:", response.status);
+            }
+                
+}
+
+        async function Save() {
+            const modelDto = {
+                comment: $("#txtComment").val(),
+                date: $("#txtDate").val(),
+                totalAmount: $("#txtTotalAmount").val(),
+                serviceId: $("#cboService").val()
+            };
+
+            try {
+                const response = await fetch("/Transaction/New", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+                    body: JSON.stringify(modelDto)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    if (data != 0) {
+                        Swal.fire({
+                            title: "¡Buen trabajo!",
+                            text: "El registro se completó exitosamente.",
+                            icon: "success",
+                            confirmButtonText: "Aceptar",
+                            timer: 2000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "No se pudo registrar",
+                            text: "Verifique los datos e inténtelo nuevamente.",
+                            icon: "warning",
+                            confirmButtonText: "Entendido"
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        title: "Error en la solicitud",
+                        text: `Código de error: ${response.status}`,
+                        icon: "error",
+                        confirmButtonText: "Cerrar"
+                    });
+                }
+            } catch (error) {
+                console.error("Error en la solicitud:", error);
+                alert("Ocurrió un error al comunicarse con el servidor.");
+            }
+        }
+
+    </script>
+}

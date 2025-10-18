@@ -14,9 +14,9 @@ public class ServiceManager
         _context = context;
     }
 
-    public List<ServiceVM> GetAll(int userId)   
+    public List<ServiceVM> GetAll(int userId)
     {
-        var serviceList = _context.Service 
+        var serviceList = _context.Service
             .Where(s => s.UserId == userId)
             .AsNoTracking()
             .Select(item => new ServiceVM
@@ -27,7 +27,7 @@ public class ServiceManager
                 Type = item.Type
             })
             .ToList();
-        
+
         return serviceList;
     }
 
@@ -45,7 +45,7 @@ public class ServiceManager
         return rowsAftected;
     }
 
-    public ServiceVM?  GetById(int id)
+    public ServiceVM? GetById(int id)
     {
         var model = _context.Service
             .AsNoTracking()
@@ -59,7 +59,7 @@ public class ServiceManager
             })
             .FirstOrDefault();
 
-        return model  ;
+        return model;
     }
 
     public int Edit(ServiceVM viewModel)
@@ -67,22 +67,33 @@ public class ServiceManager
         var entity = _context.Service.Find(viewModel.ServiceId);
         if (entity == null)
             return 0;
-        
+
         entity.Name = viewModel.Name;
         entity.Type = viewModel.Type;
-        
+
         _context.Service.Update(entity);
         var rowsAftected = _context.SaveChanges();
         return rowsAftected;
-
     }
 
     public int Delete(int id)
     {
         var entity = _context.Service.Find(id);
         _context.Service.Remove(entity);
-        
+
         var rowsAftected = _context.SaveChanges();
         return rowsAftected;
+    }
+    public List<ServiceVM> GetByType(int userId, string type)
+    {
+        var listServicesByType = _context.Service
+            .Where(item => item.Type == type && item.UserId == userId)
+            .Select(item => new ServiceVM
+            {
+                ServiceId = item.ServiceId,
+                Name = item.Name,
+            }).ToList();
+        
+        return listServicesByType;
     }
 }
