@@ -27,4 +27,23 @@ public class TransactionManager
         int affectedRows = _context.SaveChanges();
         return affectedRows;
     }
+
+    public List<HistoryDTO> GetHistory(DateOnly startDate, DateOnly endDate, int UserId)
+    {
+        var listTransacctios = _context
+            .Transaction
+            .Where(item => item.UserId == UserId
+                           && item.Date >= startDate
+                           && item.Date <= endDate
+            ).Select(item => new HistoryDTO
+            {
+                Date = item.Date.ToString("dd/MM/yyyy"),
+                Month = item.Date.ToString("MMMM"),
+                TypeService = item.Service.Type, //typeService
+                Service = item.Service.Name,
+                TotalAmount = item.TotalAmount.ToString()
+            }).ToList();
+        
+        return listTransacctios;
+    }
 }

@@ -39,4 +39,20 @@ public class TransactionController : Controller
         return Ok(response);
     }
     
+    public IActionResult History()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult HistoryTransaction(DateOnly startDate, DateOnly endDate, int UserId)
+    {
+        //Todo:Change userId
+        UserId = 1;
+        var listTransactions = _transactionManager.GetHistory(startDate, endDate, UserId);
+        return Ok(new {  
+            data = listTransactions
+        });
+    }
+    
 }
