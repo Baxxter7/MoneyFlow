@@ -13,6 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 builder.Services.AddScoped<ServiceManager>();
 builder.Services.AddScoped<TransactionManager>();
+builder.Services.AddScoped<UserManager>();
 
 var app = builder.Build();
 
@@ -33,7 +34,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
         name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}")
+        pattern: "{controller=Account}/{action=Login}/{id?}")
     .WithStaticAssets();
 
 
