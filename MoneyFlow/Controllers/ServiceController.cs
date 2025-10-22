@@ -1,23 +1,23 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Managers;
 using MoneyFlow.Models;
 
 namespace MoneyFlow.Controllers;
+
 [Authorize]
-public class ServiceController : Controller
+public class ServiceController: BaseController
 {
     private readonly ServiceManager _manager;
-
     public ServiceController(ServiceManager manager)
     {
         _manager = manager;
     }
-    
-    //Todo: Cambiar user ID
     public IActionResult Index()
     {
-        var serviceList =  _manager.GetAll(1);
+       
+        var serviceList =  _manager.GetAll(UserLoggedId);
         return View(serviceList);
     }
 
@@ -37,17 +37,11 @@ public class ServiceController : Controller
                 .SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage)
                 .ToList();
-
-            // Visualízalos en consola o en una vista temporal
-            Console.WriteLine(string.Join(", ", errors));
-
-            
             return View(service);
         }
-
-        //TODO: Cambiar el user id
-      
-        service.UserId = 1;
+        
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        service.UserId = UserLoggedId;
         var response = _manager.New(service);
         
         if(response == 1)
@@ -58,10 +52,10 @@ public class ServiceController : Controller
     }
     
     [HttpGet]
-    public IActionResult Edit(int id = 1)
+    public IActionResult Edit(int id)
     {
-        //todo: Cambiar a dinamico
-        var service = _manager.GetById(id);
+   
+        var service = _manager.GetById(UserLoggedId);
         
         return View(service);
     }
@@ -69,16 +63,13 @@ public class ServiceController : Controller
     [HttpPost]
     public IActionResult Edit(ServiceVM viewModel )
     {
-        //todo: Cambiar a dinamico
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values
                 .SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage)
                 .ToList();
-
-            // Visualízalos en consola o en una vista temporal
-            Console.WriteLine(string.Join(", ", errors));
+            
             return View();
         }
 
@@ -92,7 +83,6 @@ public class ServiceController : Controller
     
     public IActionResult Delete(int id )
     {
-        //todo: Cambiar a dinamico
         var service = _manager.Delete(id);
         
         return RedirectToAction("Index");

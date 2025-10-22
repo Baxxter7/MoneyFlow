@@ -5,7 +5,7 @@ using MoneyFlow.Managers;
 
 namespace MoneyFlow.Controllers;
 [Authorize]
-public class TransactionController : Controller
+public class TransactionController : BaseController
 {
     private readonly ServiceManager _serviceManager;
     private readonly TransactionManager _transactionManager;
@@ -24,8 +24,7 @@ public class TransactionController : Controller
     [HttpGet]
     public IActionResult ServicesByType(string typeService)
     {
-        //TODO: CHANGE USER ID
-        var userId = 1;
+        var userId = UserLoggedId;
         
         var services= _serviceManager.GetByType(userId, typeService);
         return Ok(services);
@@ -34,8 +33,8 @@ public class TransactionController : Controller
     [HttpPost]
     public IActionResult New([FromBody] TransactionDTO transactionDto)
     {
-        //TODO: CHANGE USER ID
-        transactionDto.UserId = 1;
+
+        transactionDto.UserId = UserLoggedId;
         var response = _transactionManager.New(transactionDto);
         return Ok(response);
     }
@@ -48,8 +47,7 @@ public class TransactionController : Controller
     [HttpGet]
     public IActionResult HistoryTransaction(DateOnly startDate, DateOnly endDate, int UserId)
     {
-        //Todo:Change userId
-        UserId = 1;
+        UserId = UserLoggedId;
         var listTransactions = _transactionManager.GetHistory(startDate, endDate, UserId);
         return Ok(new {  
             data = listTransactions
