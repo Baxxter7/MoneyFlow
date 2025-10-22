@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Managers;
 using MoneyFlow.Models;
 
 namespace MoneyFlow.Controllers;
-
+[Authorize]
 public class ServiceController : Controller
 {
     private readonly ServiceManager _manager;

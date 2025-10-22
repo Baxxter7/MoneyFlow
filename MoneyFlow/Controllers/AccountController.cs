@@ -1,10 +1,14 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Managers;
 using MoneyFlow.Models;
 
 namespace MoneyFlow.Controllers;
-
+[AllowAnonymous]
 public class AccountController : Controller
 {
     private readonly UserManager _userManager;
@@ -22,7 +26,7 @@ public class AccountController : Controller
     }
     
     [HttpPost]
-    public IActionResult Login(LoginVM login)
+    public async Task<IActionResult>  Login(LoginVM login)
     {
         if(!ModelState.IsValid) return View(login);
 
@@ -31,7 +35,21 @@ public class AccountController : Controller
         {
             ViewBag.Message = "Invalid username or password";
             return View(login); 
-        }else {
+        }else
+        {
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier, found.UserId.ToString()), 
+                new Claim(ClaimTypes.Name, found.FullName)
+            };
+            
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                new AuthenticationProperties() { AllowRefresh = true }
+            );
             return RedirectToAction("Index", "Home");
         }
     }
